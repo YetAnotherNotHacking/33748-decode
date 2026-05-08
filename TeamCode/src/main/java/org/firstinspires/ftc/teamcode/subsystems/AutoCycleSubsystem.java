@@ -1,0 +1,178 @@
+package org.firstinspires.ftc.teamcode.subsystems;
+
+import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.PathChain;
+
+import org.firstinspires.ftc.teamcode.constants.AutoConstants;
+import org.firstinspires.ftc.teamcode.constants.ShooterConstants;
+
+public class AutoCycleSubsystem {
+    public enum Slot {
+        A,
+        B
+    }
+
+    private Slot activeSlot;
+    private boolean blueAlliance;
+    private boolean pathStarted;
+
+    private Pose activeTarget;
+
+    private double previousX;
+    private double previousY;
+    private long previousTimeNanos;
+    private boolean hasPreviousPose;
+
+    private double lastDistanceToTarget;
+    private double lastEtaSeconds = Double.POSITIVE_INFINITY;
+    private boolean feederShouldRun;
+
+    public void beginOrUpdate(Slot slot, boolean isBlueAlliance, Pose currentPose, Follower follower) {
+        if (!pathStarted || activeSlot != slot || blueAlliance != isBlueAlliance) {
+            activeSlot = slot;
+            blueAlliance = isBlueAlliance;
+            activeTarget = getTargetPose(slot, isBlueAlliance);
+            follower.followPath(buildSingleSegmentPath(follower, currentPose, activeTarget));
+            pathStarted = true;
+            hasPreviousPose = false;
+            feederShouldRun = false;
+        }
+
+        updateProgress(currentPose, follower);
+    }
+
+    public void cancel(Follower follower) {
+        if (!pathStarted) {
+            return;
+        }
+
+        stopFollowerPathIfPossible(follower);
+        pathStarted = false;
+        activeSlot = null;
+        activeTarget = null;
+        hasPreviousPose = false;
+        feederShouldRun = false;
+        lastDistanceToTarget = 0.0;
+        lastEtaSeconds = Double.POSITIVE_INFINITY;
+    }
+
+    public boolean isActive() {
+        return pathStarted;
+    }
+
+    public double getSuggestedShooterRpm() {
+        return pathStarted ? ShooterConstants.DEFAULT_TARGET_RPM : 0.0;
+    }
+
+    public double getSuggestedFeederPower() {
+        return feederShouldRun ? ShooterConstants.FEEDER_MANUAL_POWER : 0.0;
+    }
+
+    public Pose getActiveTarget() {
+        return activeTarget;
+    }
+
+    public double getLastDistanceToTarget() {
+        return lastDistanceToTarget;
+    }
+
+    public double getLastEtaSeconds() {
+        return lastEtaSeconds;
+    }
+
+    private void updateProgress(Pose currentPose, Follower follower) {
+        if (activeTarget == null) {
+            feederShouldRun = false;
+            lastDistanceToTarget = 0.0;
+            lastEtaSeconds = Double.POSITIVE_INFINITY;
+            return;
+        }
+
+        double dx = activeTarget.getX() - currentPose.getX();
+        double dy = activeTarget.getY() - currentPose.getY();
+        lastDistanceToTarget = Math.hypot(dx, dy);
+
+        double headingErrorDeg = Math.toDegrees(wrapRadians(activeTarget.getHeading() - currentPose.getHeading()));
+        boolean arrived = lastDistanceToTarget <= AutoConstants.CYCLE_POSITION_TOLERANCE_INCHES
+                && Math.abs(headingErrorDeg) <= AutoConstants.CYCLE_HEADING_TOLERANCE_DEGREES
+                && !follower.isBusy();
+
+        long nowNanos = System.nanoTime();
+        if (!hasPreviousPose) {
+            hasPreviousPose = true;
+            previousX = currentPose.getX();
+            previousY = currentPose.getY();
+            previousTimeNanos = nowNanos;
+            lastEtaSeconds = Double.POSITIVE_INFINITY;
+        } else {
+            double dtSeconds = (nowNanos - previousTimeNanos) / 1e9;
+            if (dtSeconds > 1e-6) {
+                double vx = (currentPose.getX() - previousX) / dtSeconds;
+                double vy = (currentPose.getY() - previousY) / dtSeconds;
+                double speed = Math.hypot(vx, vy);
+                lastEtaSeconds = speed > 1e-3 ? (lastDistanceToTarget / speed) : Double.POSITIVE_INFINITY;
+            }
+            previousX = currentPose.getX();
+            previousY = currentPose.getY();
+            previousTimeNanos = nowNanos;
+        }
+
+        feederShouldRun = arrived || lastEtaSeconds <= AutoConstants.CYCLE_FEED_LEAD_SECONDS;
+    }
+
+    private static Pose getTargetPose(Slot slot, boolean isBlueAlliance) {
+        if (isBlueAlliance) {
+            if (slot == Slot.A) {
+                return new Pose(
+                        AutoConstants.BLUE_CYCLE_A_X_INCHES,
+                        AutoConstants.BLUE_CYCLE_A_Y_INCHES,
+                        Math.toRadians(AutoConstants.BLUE_CYCLE_A_HEADING_DEGREES)
+                );
+            }
+            return new Pose(
+                    AutoConstants.BLUE_CYCLE_B_X_INCHES,
+                    AutoConstants.BLUE_CYCLE_B_Y_INCHES,
+                    Math.toRadians(AutoConstants.BLUE_CYCLE_B_HEADING_DEGREES)
+            );
+        }
+
+        if (slot == Slot.A) {
+            return new Pose(
+                    AutoConstants.RED_CYCLE_A_X_INCHES,
+                    AutoConstants.RED_CYCLE_A_Y_INCHES,
+                    Math.toRadians(AutoConstants.RED_CYCLE_A_HEADING_DEGREES)
+            );
+        }
+        return new Pose(
+                AutoConstants.RED_CYCLE_B_X_INCHES,
+                AutoConstants.RED_CYCLE_B_Y_INCHES,
+                Math.toRadians(AutoConstants.RED_CYCLE_B_HEADING_DEGREES)
+        );
+    }
+
+    private static PathChain buildSingleSegmentPath(Follower follower, Pose from, Pose to) {
+        com.pedropathing.paths.PathBuilder builder = follower.pathBuilder();
+        builder.addPath(new BezierLine(from, to))
+                .setLinearHeadingInterpolation(from.getHeading(), to.getHeading());
+        return builder.build();
+    }
+
+    private static void stopFollowerPathIfPossible(Follower follower) {
+        try {
+            follower.getClass().getMethod("breakFollowing").invoke(follower);
+        } catch (Exception ignored) {
+        }
+    }
+
+    private static double wrapRadians(double angle) {
+        while (angle > Math.PI) {
+            angle -= 2.0 * Math.PI;
+        }
+        while (angle <= -Math.PI) {
+            angle += 2.0 * Math.PI;
+        }
+        return angle;
+    }
+}
