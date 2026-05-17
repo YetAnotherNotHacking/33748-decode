@@ -37,7 +37,7 @@ public class ShooterSubsystem {
     }
 
     public double getCurrentRpm() {
-        return -((shooterMotor.getVelocity() * 60.0) / ShooterConstants.TICKS_PER_REV);
+        return ((shooterMotor.getVelocity() * 60.0) / ShooterConstants.TICKS_PER_REV);
     }
 
     public void setFeederPower(double power) {
