@@ -1,0 +1,38 @@
+package org.firstinspires.ftc.teamcode.autonomous.opmodes;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import org.firstinspires.ftc.teamcode.autonomous.BaseAutoOpMode;
+import org.firstinspires.ftc.teamcode.autonomous.Controller;
+import org.firstinspires.ftc.teamcode.constants.AutonomousConstants;
+import org.firstinspires.ftc.teamcode.constants.AutonomousPoints;
+
+@Autonomous(name = "Blue Back 6 Ball", preselectTeleOp = "Blue Goal TeleOp")
+public class BlueBack6 extends BaseAutoOpMode {
+    @Override
+    protected void runAutonomous() {
+        Controller controller = new Controller(this, robot);
+        controller.init();
+        controller.setStartingPose(AutonomousPoints.Blue.Back.SHOOT);
+
+        controller.startShooter(AutonomousConstants.CLOSE_SHOOT_RPM);
+        
+        // 1. move to shoot position
+        controller.pathTo(AutonomousPoints.Blue.Back.SHOOT);
+        
+        // 2. shoot balls (preloads)
+        controller.shoot(AutonomousConstants.PRELOAD_SHOOT_TIME);
+        
+        // Engage intake (for rest of auton)
+        controller.runIntakeForward();
+        
+        // 3. move to human player ball intake position
+        controller.pathTo(AutonomousPoints.Blue.Back.INTAKE_HUMAN);
+        
+        // 4. shoot balls
+        controller.pathTo(AutonomousPoints.Blue.Back.SHOOT);
+        controller.shoot(AutonomousConstants.CYCLE_SHOOT_TIME);
+        
+        // 5. park back position
+        controller.pathTo(AutonomousPoints.Blue.Back.CLOSE_PARK);
+    }
+}
