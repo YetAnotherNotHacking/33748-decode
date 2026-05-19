@@ -6,6 +6,8 @@ import com.bylazar.configurables.annotations.Configurable;
 public class ShooterConstants {
     public static double TICKS_PER_REV = 28.0;
 
+    // it should be noted that we have switched to bang bang,
+    // as it updates faster than this PID.
     public static double PID_P = 120.0;
     public static double PID_I = 0.006;
     public static double PID_D = 0.0;

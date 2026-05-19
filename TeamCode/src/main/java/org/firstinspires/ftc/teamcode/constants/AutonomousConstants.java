@@ -14,7 +14,7 @@ public final class AutonomousConstants {
     public static long SHOOT_REVERSE_CYCLE_MS = 100;
     
     public static double INTAKE_FORWARD_SPEED = 1.0;
-    public static double INTAKE_REVERSE_SPEED = 0.45; // As requested, default should be 0.45
+    public static double INTAKE_REVERSE_SPEED = 0.45;
     
     // Feeder timings/speeds during autonomous
     public static double FEEDER_SPEED = 1.0;
