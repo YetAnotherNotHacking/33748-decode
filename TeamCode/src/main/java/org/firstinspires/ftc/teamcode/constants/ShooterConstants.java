@@ -15,6 +15,8 @@ public class ShooterConstants {
 
     public static double DEFAULT_TARGET_RPM = 4300.0;
     public static double MAX_TARGET_RPM = 6000.0;
+    public static double CYCLE_A_TARGET_RPM = 4300.0;
+    public static double CYCLE_B_TARGET_RPM = 4300.0;
 
     public static double FEEDER_MANUAL_POWER = 1.00;
     public static double FEEDER_INDEX_POWER = 0.15;
