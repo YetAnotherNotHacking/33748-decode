@@ -2,19 +2,23 @@ package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
-import com.pedropathing.pathgen.BezierLine;
-import com.pedropathing.pathgen.Path;
-import com.pedropathing.pathgen.Point;
+import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 
 import org.firstinspires.ftc.teamcode.RobotContainer;
 import org.firstinspires.ftc.teamcode.constants.AutonomousConstants;
+import org.firstinspires.ftc.teamcode.constants.HardwareConstants;
+import org.firstinspires.ftc.teamcode.constants.ShooterConstants;
 
 public class Controller {
     private final LinearOpMode opMode;
     private final RobotContainer robot;
     private Follower follower;
+    private RevColorSensorV3 colorShootSensor;
+    private boolean isShooting = false;
 
     public Controller(LinearOpMode opMode, RobotContainer robot) {
         this.opMode = opMode;
@@ -24,6 +28,14 @@ public class Controller {
     public void init() {
         // Assume robot.init has already been called in BaseAutoOpMode
         follower = robot.getFollower();
+        try {
+            colorShootSensor = opMode.hardwareMap.get(RevColorSensorV3.class, HardwareConstants.COLOR_SHOOT_SENSOR);
+        } catch (Exception ignored) {
+            colorShootSensor = null;
+        }
+
+        // Start the intake forward at configurable speed immediately
+        robot.intake.runFromTrigger(AutonomousConstants.INTAKE_FORWARD_SPEED);
     }
 
     public void setStartingPose(Pose startPose) {
@@ -42,12 +54,9 @@ public class Controller {
      * Turns on the intake to the default forward speed.
      */
     public void enableIntake() {
-        robot.intake.reverse(-AutonomousConstants.INTAKE_FORWARD_SPEED); // Assuming forward is positive in reverse? Wait, IntakeSubsystem uses runFromTrigger.
-        // Actually, IntakeSubsystem has reverse(power) where positive power reverses it.
-        // Let's look at IntakeSubsystem. runFromTrigger(value) runs forward. reverse(value) runs backward.
+        robot.intake.runFromTrigger(AutonomousConstants.INTAKE_FORWARD_SPEED);
     }
     
-    // I need to correct IntakeSubsystem calls later. Let's make helper methods for this:
     public void runIntakeForward() {
         robot.intake.runFromTrigger(AutonomousConstants.INTAKE_FORWARD_SPEED);
     }
@@ -66,17 +75,38 @@ public class Controller {
     public void pathTo(Pose targetPose) {
         if (!opMode.opModeIsActive()) return;
 
-        Path path = new Path(new BezierLine(
-                new Point(follower.getPose()),
-                new Point(targetPose)
-        ));
-        path.setLinearHeadingInterpolation(follower.getPose().getHeading(), targetPose.getHeading());
+        com.pedropathing.paths.PathBuilder builder = follower.pathBuilder();
+        builder.addPath(new BezierLine(follower.getPose(), targetPose))
+                .setLinearHeadingInterpolation(follower.getPose().getHeading(), targetPose.getHeading());
+        PathChain path = builder.build();
 
         follower.followPath(path);
 
         while (opMode.opModeIsActive() && follower.isBusy()) {
             update();
         }
+
+        delayBetweenCommands();
+    }
+
+    /**
+     * Drives to a point with a custom maximum speed scaling and blocks until the robot is near the target or opmode stops.
+     */
+    public void pathTo(Pose targetPose, double speedPercent) {
+        if (!opMode.opModeIsActive()) return;
+
+        com.pedropathing.paths.PathBuilder builder = follower.pathBuilder();
+        builder.addPath(new BezierLine(follower.getPose(), targetPose))
+                .setLinearHeadingInterpolation(follower.getPose().getHeading(), targetPose.getHeading());
+        PathChain path = builder.build();
+
+        follower.followPath(path, speedPercent, true);
+
+        while (opMode.opModeIsActive() && follower.isBusy()) {
+            update();
+        }
+
+        delayBetweenCommands();
     }
 
     /**
@@ -86,36 +116,30 @@ public class Controller {
     public void shoot(long durationMs) {
         if (!opMode.opModeIsActive()) return;
 
+        // Wait to allow the flywheel to spin up before feeding the balls
+        if (AutonomousConstants.SPIN_UP_DELAY_MS > 0) {
+            ElapsedTime spinUpTimer = new ElapsedTime();
+            while (opMode.opModeIsActive() && spinUpTimer.milliseconds() < AutonomousConstants.SPIN_UP_DELAY_MS) {
+                update();
+            }
+        }
+
+        isShooting = true;
+
         ElapsedTime timer = new ElapsedTime();
         timer.reset();
-
-        ElapsedTime cycleTimer = new ElapsedTime();
-        cycleTimer.reset();
         
         robot.shooter.setFeederPower(AutonomousConstants.FEEDER_SPEED);
+        robot.intake.runFromTrigger(1.0);
 
         while (opMode.opModeIsActive() && timer.milliseconds() < durationMs) {
-            long cycleTime = (long) cycleTimer.milliseconds();
-            long totalCycleMs = AutonomousConstants.SHOOT_FORWARD_CYCLE_MS + AutonomousConstants.SHOOT_REVERSE_CYCLE_MS;
-            
-            if (cycleTime > totalCycleMs) {
-                cycleTimer.reset();
-                cycleTime = 0;
-            }
-
-            if (cycleTime < AutonomousConstants.SHOOT_FORWARD_CYCLE_MS) {
-                runIntakeForward();
-            } else {
-                runIntakeReverse();
-            }
-
             update();
         }
 
         robot.shooter.setFeederPower(0.0);
-        // Turn intake back to normal forward spinning after shooting finishes,
-        // since the user states "intake should be running the entire time"
-        runIntakeForward();
+        isShooting = false;
+
+        delayBetweenCommands();
     }
 
     /**
@@ -123,6 +147,42 @@ public class Controller {
      */
     public void update() {
         follower.update();
+
+        // Always ensure the intake is running forward during autonomous
+        robot.intake.runFromTrigger(AutonomousConstants.INTAKE_FORWARD_SPEED);
+
+        if (!isShooting) {
+            double feederPower;
+            int alpha = -1;
+            if (colorShootSensor != null) {
+                alpha = colorShootSensor.alpha();
+            }
+            boolean shouldStopIndexer = alpha > ShooterConstants.FEEDER_ALPHA_STOP_THRESHOLD;
+            feederPower = shouldStopIndexer ? 0.0 : ShooterConstants.FEEDER_INDEX_POWER;
+            robot.shooter.setFeederPower(feederPower);
+        }
+
         robot.shooter.update();
+    }
+
+    /**
+     * Sleeps for the specified duration in milliseconds while updating background subsystems.
+     */
+    public void sleep(long durationMs) {
+        if (!opMode.opModeIsActive()) return;
+
+        ElapsedTime timer = new ElapsedTime();
+        while (opMode.opModeIsActive() && timer.milliseconds() < durationMs) {
+            update();
+        }
+    }
+
+    private void delayBetweenCommands() {
+        if (AutonomousConstants.COMMAND_DELAY_MS > 0 && opMode.opModeIsActive()) {
+            ElapsedTime delayTimer = new ElapsedTime();
+            while (opMode.opModeIsActive() && delayTimer.milliseconds() < AutonomousConstants.COMMAND_DELAY_MS) {
+                update();
+            }
+        }
     }
 }
