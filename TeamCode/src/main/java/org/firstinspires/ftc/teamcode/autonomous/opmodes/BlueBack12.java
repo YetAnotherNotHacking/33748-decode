@@ -19,34 +19,40 @@ public class BlueBack12 extends BaseAutoOpMode {
         // 1. move to shoot position
         controller.pathTo(AutonomousPoints.Blue.Back.SHOOT);
         
+        // 1.5 wait for spin up delay
+        controller.sleep(AutonomousConstants.SPIN_UP_DELAY_MS);
+
+
         // 2. shoot balls (preloads)
         controller.shoot(AutonomousConstants.PRELOAD_SHOOT_TIME);
         
         // Engage intake (for rest of auton)
         controller.runIntakeForward();
         
-        // 3. move to human player ball intake position
-        controller.pathTo(AutonomousPoints.Blue.Back.INTAKE_HUMAN);
-        
-        // 4. shoot balls
-        controller.pathTo(AutonomousPoints.Blue.Back.SHOOT);
-        controller.shoot(AutonomousConstants.CYCLE_SHOOT_TIME);
+        if (!AutonomousConstants.SKIP_HUMAN_INTAKE) {
+            // 3. move to human player ball intake position
+            controller.pathTo(AutonomousPoints.Blue.Back.INTAKE_HUMAN);
+            
+            // 4. shoot balls
+            controller.pathTo(AutonomousPoints.Blue.Back.SHOOT);
+            controller.shoot(AutonomousConstants.CYCLE_SHOOT_TIME);
+        }
         
         // 5. move to intake position 1 for back row intake
-        controller.pathTo(AutonomousPoints.Blue.Back.INTAKE_CLOSE_1);
+        controller.pathTo(AutonomousPoints.Blue.Back.INTAKE_CLOSE_1, AutonomousConstants.INTAKE_PATH_SPEED_SCALING);
         
         // 6. move to intake position 2 for back row intake
-        controller.pathTo(AutonomousPoints.Blue.Back.INTAKE_CLOSE_2);
+        controller.pathTo(AutonomousPoints.Blue.Back.INTAKE_CLOSE_2, AutonomousConstants.INTAKE_PATH_SPEED_SCALING);
         
         // 7. shoot balls
         controller.pathTo(AutonomousPoints.Blue.Back.SHOOT);
         controller.shoot(AutonomousConstants.CYCLE_SHOOT_TIME);
         
         // 8. move to intake position 1 for middle row intake
-        controller.pathTo(AutonomousPoints.Blue.Back.INTAKE_MIDDLE_1);
+        controller.pathTo(AutonomousPoints.Blue.Back.INTAKE_MIDDLE_1, AutonomousConstants.INTAKE_PATH_SPEED_SCALING);
         
         // 9. move to intake position 2 for middle row intake
-        controller.pathTo(AutonomousPoints.Blue.Back.INTAKE_MIDDLE_2);
+        controller.pathTo(AutonomousPoints.Blue.Back.INTAKE_MIDDLE_2, AutonomousConstants.INTAKE_PATH_SPEED_SCALING);
         
         // 10. shoot balls
         controller.pathTo(AutonomousPoints.Blue.Back.SHOOT);

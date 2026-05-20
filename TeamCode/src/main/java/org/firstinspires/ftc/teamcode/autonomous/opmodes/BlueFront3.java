@@ -19,6 +19,10 @@ public class BlueFront3 extends BaseAutoOpMode {
         // 1. move to shoot position
         controller.pathTo(AutonomousPoints.Blue.Front.SHOOT);
         
+        // 1.5 wait for spin up delay
+        controller.sleep(AutonomousConstants.SPIN_UP_DELAY_MS);
+
+
         // 2. shoot balls (preloads)
         controller.shoot(AutonomousConstants.PRELOAD_SHOOT_TIME);
         

@@ -19,18 +19,24 @@ public class RedBack6 extends BaseAutoOpMode {
         // 1. move to shoot position
         controller.pathTo(AutonomousPoints.Red.Back.SHOOT);
         
+        // 1.5 wait for spin up delay
+        controller.sleep(AutonomousConstants.SPIN_UP_DELAY_MS);
+
+
         // 2. shoot balls (preloads)
         controller.shoot(AutonomousConstants.PRELOAD_SHOOT_TIME);
         
         // Engage intake (for rest of auton)
         controller.runIntakeForward();
         
-        // 3. move to human player ball intake position
-        controller.pathTo(AutonomousPoints.Red.Back.INTAKE_HUMAN);
-        
-        // 4. shoot balls
-        controller.pathTo(AutonomousPoints.Red.Back.SHOOT);
-        controller.shoot(AutonomousConstants.CYCLE_SHOOT_TIME);
+        if (!AutonomousConstants.SKIP_HUMAN_INTAKE) {
+            // 3. move to human player ball intake position
+            controller.pathTo(AutonomousPoints.Red.Back.INTAKE_HUMAN);
+            
+            // 4. shoot balls
+            controller.pathTo(AutonomousPoints.Red.Back.SHOOT);
+            controller.shoot(AutonomousConstants.CYCLE_SHOOT_TIME);
+        }
         
         // 5. park back position
         controller.pathTo(AutonomousPoints.Red.Back.CLOSE_PARK);
