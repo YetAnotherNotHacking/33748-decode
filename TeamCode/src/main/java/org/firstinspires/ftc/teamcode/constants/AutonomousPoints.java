@@ -1,16 +1,18 @@
 package org.firstinspires.ftc.teamcode.constants;
 
 import com.pedropathing.geometry.Pose;
+import com.bylazar.configurables.annotations.Configurable;
 
+@Configurable
 public final class AutonomousPoints {
 
     public static final class Red {
         public static final class Back {
-            public static final Pose SHOOT = new Pose(7.79, -0.48, Math.toRadians(-113.76));
-            public static final Pose INTAKE_CLOSE_1 = new Pose(26.77, -16.11, Math.toRadians(90.00));
-            public static final Pose INTAKE_CLOSE_2 = new Pose(26.17, -39.70, Math.toRadians(90.00));
-            public static final Pose INTAKE_MIDDLE_1 = new Pose(49.06, -17.78, Math.toRadians(90.00));
-            public static final Pose INTAKE_MIDDLE_2 = new Pose(48.87, -39.57, Math.toRadians(90.00));
+            public static final Pose SHOOT = new Pose(7.79, -0.48, Math.toRadians(-109.00));
+            public static final Pose INTAKE_CLOSE_1 = new Pose(26.00, -2.0, Math.toRadians(90.00));
+            public static final Pose INTAKE_CLOSE_2 = new Pose(26.00, -39.70, Math.toRadians(90.00));
+            public static final Pose INTAKE_MIDDLE_1 = new Pose(50.00, -2.0, Math.toRadians(90.00));
+            public static final Pose INTAKE_MIDDLE_2 = new Pose(50.00, -34.57, Math.toRadians(90.00));
             public static final Pose INTAKE_HUMAN = new Pose(1.99, -44.98, Math.toRadians(70.94));
             public static final Pose CLOSE_PARK = new Pose(29.91, -36.08, Math.toRadians(-90.00));
         }
@@ -18,9 +20,9 @@ public final class AutonomousPoints {
         public static final class Front {
             public static final Pose SHOOT = new Pose(-49.65, -1.28, Math.toRadians(-83.59));
             public static final Pose INTAKE_FAR_1 = new Pose(-40.99, -17.66, Math.toRadians(142.06));
-            public static final Pose INTAKE_FAR_2 = new Pose(-22.61, -32.33, Math.toRadians(140.47));
+            public static final Pose INTAKE_FAR_2 = new Pose(-22.61, -33.93, Math.toRadians(140.47));
             public static final Pose INTAKE_MID_1 = new Pose(-54.56, -34.25, Math.toRadians(140.66));
-            public static final Pose INTAKE_MID_2 = new Pose(-38.80, -49.29, Math.toRadians(139.87));
+            public static final Pose INTAKE_MID_2 = new Pose(-38.80, -53.29, Math.toRadians(139.87));
             public static final Pose PARK_FAR = new Pose(-31.36, 17.58, Math.toRadians(-41.80));
         }
     }
