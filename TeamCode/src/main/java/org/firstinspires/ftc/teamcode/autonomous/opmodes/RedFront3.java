@@ -15,10 +15,13 @@ public class RedFront3 extends BaseAutoOpMode {
         controller.setStartingPose(AutonomousPoints.Red.Front.SHOOT);
 
         controller.startShooter(AutonomousConstants.FAR_SHOOT_RPM);
-        
+
         // 1. move to shoot position
         controller.pathTo(AutonomousPoints.Red.Front.SHOOT);
         
+        // 1.5 wait for spin up delay
+        controller.sleep(AutonomousConstants.SPIN_UP_DELAY_MS);
+
         // 2. shoot balls (preloads)
         controller.shoot(AutonomousConstants.PRELOAD_SHOOT_TIME);
         

@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.RobotContainer;
+import org.firstinspires.ftc.teamcode.constants.AutoConstants;
 import org.firstinspires.ftc.teamcode.constants.HardwareConstants;
 import org.firstinspires.ftc.teamcode.constants.IntakeConstants;
 import org.firstinspires.ftc.teamcode.constants.ShooterConstants;
@@ -17,6 +18,7 @@ public abstract class BaseGoalTeleOp extends OpMode {
     private boolean lastStart;
 
     private RevColorSensorV3 colorShootSensor;
+    private double lastActiveCycleRpm = ShooterConstants.DEFAULT_TARGET_RPM;
 
     protected abstract String getDriveTeamName();
 
@@ -38,6 +40,7 @@ public abstract class BaseGoalTeleOp extends OpMode {
         robot.drive.setBrakeMode(true);
         robot.shooter.setBrakeMode(false);
         robot.setFieldPose(0.0, 0.0, 0.0);
+        lastActiveCycleRpm = ShooterConstants.DEFAULT_TARGET_RPM;
     }
 
     @Override
@@ -69,11 +72,7 @@ public abstract class BaseGoalTeleOp extends OpMode {
         }
 
         if (robot.autoCycle.isActive()) {
-            if (robot.autoCycle.getSuggestedFeederPower() > 0.0) {
-                robot.intake.stop();
-            } else {
-                robot.intake.runFromTrigger(1.0);
-            }
+            robot.intake.runFromTrigger(AutoConstants.CYCLE_INTAKE_POWER);
         } else {
             if (gamepad1.left_bumper) {
                 robot.intake.reverse(IntakeConstants.BUMPER_REVERSE_POWER);
@@ -85,11 +84,12 @@ public abstract class BaseGoalTeleOp extends OpMode {
         double shooterTargetRpm;
         if (robot.autoCycle.isActive()) {
             shooterTargetRpm = robot.autoCycle.getSuggestedShooterRpm();
+            lastActiveCycleRpm = shooterTargetRpm;
         } else if (gamepad1.right_trigger > ShooterConstants.SHOOTER_TRIGGER_DEADBAND) {
-            shooterTargetRpm = ShooterConstants.DEFAULT_TARGET_RPM
-                    + (gamepad1.right_trigger * (ShooterConstants.MAX_TARGET_RPM - ShooterConstants.DEFAULT_TARGET_RPM));
+            shooterTargetRpm = lastActiveCycleRpm
+                    + (gamepad1.right_trigger * (ShooterConstants.MAX_TARGET_RPM - lastActiveCycleRpm));
         } else {
-            shooterTargetRpm = ShooterConstants.DEFAULT_TARGET_RPM;
+            shooterTargetRpm = lastActiveCycleRpm;
         }
 
         int alpha = -1;
