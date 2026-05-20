@@ -63,7 +63,10 @@ public class AutoCycleSubsystem {
     }
 
     public double getSuggestedShooterRpm() {
-        return pathStarted ? ShooterConstants.DEFAULT_TARGET_RPM : 0.0;
+        if (!pathStarted) {
+            return 0.0;
+        }
+        return activeSlot == Slot.A ? ShooterConstants.CYCLE_A_TARGET_RPM : ShooterConstants.CYCLE_B_TARGET_RPM;
     }
 
     public double getSuggestedFeederPower() {
