@@ -7,6 +7,7 @@ public class AutoConstants {
     public static double CYCLE_FEED_LEAD_SECONDS = 0.025;
     public static double CYCLE_POSITION_TOLERANCE_INCHES = 1.25;
     public static double CYCLE_HEADING_TOLERANCE_DEGREES = 4.0;
+    public static double CYCLE_INTAKE_POWER = 1.0;
 
     // All cycle points are relative to the reset origin (0,0,0) set with start.
     public static double BLUE_CYCLE_A_X_INCHES = 61.75;
