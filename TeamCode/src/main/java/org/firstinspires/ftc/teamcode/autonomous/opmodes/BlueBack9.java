@@ -39,7 +39,7 @@ public class BlueBack9 extends BaseAutoOpMode {
         }
         
         // 5. move to intake position 1 for back row intake
-        controller.pathTo(AutonomousPoints.Blue.Back.INTAKE_CLOSE_1, AutonomousConstants.INTAKE_PATH_SPEED_SCALING);
+        controller.pathTo(AutonomousPoints.Blue.Back.INTAKE_CLOSE_1);
         
         // 6. move to intake position 2 for back row intake
         controller.pathTo(AutonomousPoints.Blue.Back.INTAKE_CLOSE_2, AutonomousConstants.INTAKE_PATH_SPEED_SCALING);

@@ -39,7 +39,7 @@ public class BlueBack12 extends BaseAutoOpMode {
         }
         
         // 5. move to intake position 1 for back row intake
-        controller.pathTo(AutonomousPoints.Blue.Back.INTAKE_CLOSE_1, AutonomousConstants.INTAKE_PATH_SPEED_SCALING);
+        controller.pathTo(AutonomousPoints.Blue.Back.INTAKE_CLOSE_1);
         
         // 6. move to intake position 2 for back row intake
         controller.pathTo(AutonomousPoints.Blue.Back.INTAKE_CLOSE_2, AutonomousConstants.INTAKE_PATH_SPEED_SCALING);
@@ -49,7 +49,7 @@ public class BlueBack12 extends BaseAutoOpMode {
         controller.shoot(AutonomousConstants.CYCLE_SHOOT_TIME);
         
         // 8. move to intake position 1 for middle row intake
-        controller.pathTo(AutonomousPoints.Blue.Back.INTAKE_MIDDLE_1, AutonomousConstants.INTAKE_PATH_SPEED_SCALING);
+        controller.pathTo(AutonomousPoints.Blue.Back.INTAKE_MIDDLE_1);
         
         // 9. move to intake position 2 for middle row intake
         controller.pathTo(AutonomousPoints.Blue.Back.INTAKE_MIDDLE_2, AutonomousConstants.INTAKE_PATH_SPEED_SCALING);

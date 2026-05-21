@@ -20,7 +20,7 @@ public final class AutonomousConstants {
     public static double INTAKE_REVERSE_SPEED = 0.5;
     
     // Pathing speed scaling for close/back-row intake moves
-    public static double INTAKE_PATH_SPEED_SCALING = 0.30;
+    public static double INTAKE_PATH_SPEED_SCALING = 0.21;
     
     // Feeder timings/speeds during autonomous
     public static double FEEDER_SPEED = 1.0;

@@ -19,10 +19,10 @@ public final class AutonomousPoints {
 
         public static final class Front {
             public static final Pose SHOOT = new Pose(-49.65, -1.28, Math.toRadians(-83.59));
-            public static final Pose INTAKE_FAR_1 = new Pose(-40.99, -17.66, Math.toRadians(142.06));
-            public static final Pose INTAKE_FAR_2 = new Pose(-22.61, -33.93, Math.toRadians(140.47));
-            public static final Pose INTAKE_MID_1 = new Pose(-54.56, -34.25, Math.toRadians(140.66));
-            public static final Pose INTAKE_MID_2 = new Pose(-38.80, -53.29, Math.toRadians(139.87));
+            public static final Pose INTAKE_FAR_1 = new Pose(-42.82, -14.32, Math.toRadians(142.06));
+            public static final Pose INTAKE_FAR_2 = new Pose(-20.43, -31.04, Math.toRadians(140.47));
+            public static final Pose INTAKE_MID_1 = new Pose(-56.74, -31.18, Math.toRadians(140.66));
+            public static final Pose INTAKE_MID_2 = new Pose(-35.18, -49.58, Math.toRadians(139.87));
             public static final Pose PARK_FAR = new Pose(-31.36, 17.58, Math.toRadians(-41.80));
         }
     }

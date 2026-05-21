@@ -30,7 +30,7 @@ public class BlueFront9 extends BaseAutoOpMode {
         controller.runIntakeForward();
         
         // 3. move to intake position 1 for far row intake
-        controller.pathTo(AutonomousPoints.Blue.Front.INTAKE_FAR_1, AutonomousConstants.INTAKE_PATH_SPEED_SCALING);
+        controller.pathTo(AutonomousPoints.Blue.Front.INTAKE_FAR_1);
         
         // 4. move to intake position 2 for far row intake
         controller.pathTo(AutonomousPoints.Blue.Front.INTAKE_FAR_2, AutonomousConstants.INTAKE_PATH_SPEED_SCALING);
@@ -42,7 +42,7 @@ public class BlueFront9 extends BaseAutoOpMode {
         controller.shoot(AutonomousConstants.CYCLE_SHOOT_TIME);
         
         // 7. move to intake position 1 for middle row intake
-        controller.pathTo(AutonomousPoints.Blue.Front.INTAKE_MID_1, AutonomousConstants.INTAKE_PATH_SPEED_SCALING);
+        controller.pathTo(AutonomousPoints.Blue.Front.INTAKE_MID_1);
         
         // 8. move to intake position 2 for middle row intake
         controller.pathTo(AutonomousPoints.Blue.Front.INTAKE_MID_2, AutonomousConstants.INTAKE_PATH_SPEED_SCALING);
