@@ -55,6 +55,10 @@ public class Controller {
      */
     public void enableIntake() {
         robot.intake.runFromTrigger(AutonomousConstants.INTAKE_FORWARD_SPEED);
+        sleep(AutonomousConstants.SHOOT_FORWARD_CYCLE_MS);
+        robot.intake.reverse(AutonomousConstants.INTAKE_REVERSE_SPEED);
+        sleep(AutonomousConstants.SHOOT_REVERSE_CYCLE_MS);
+        robot.intake.runFromTrigger(AutonomousConstants.INTAKE_FORWARD_SPEED);
     }
     
     public void runIntakeForward() {

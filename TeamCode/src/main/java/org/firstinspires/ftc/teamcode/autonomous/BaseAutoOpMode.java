@@ -23,7 +23,7 @@ public abstract class BaseAutoOpMode extends LinearOpMode {
         // robot.intake.runFromTrigger(AutonomousConstants.INTAKE_FORWARD_SPEED);
         // note: only uncomment if the breif reversals is breaking something
         // so that means dont uncomment it bc they werk
-        
+
         // Wait 800 ms to let the Pinpoint calibrate on reset
         sleep(1200);
 
