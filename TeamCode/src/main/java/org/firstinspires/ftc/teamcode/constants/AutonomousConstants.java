@@ -16,7 +16,7 @@ public final class AutonomousConstants {
     public static long SHOOT_FORWARD_CYCLE_MS = 1000;
     public static long SHOOT_REVERSE_CYCLE_MS = 200;
     
-    public static double INTAKE_FORWARD_SPEED = 1.0;
+    public static double INTAKE_FORWARD_SPEED = 0.9;
     public static double INTAKE_REVERSE_SPEED = 0.5;
     
     // Pathing speed scaling for close/back-row intake moves
