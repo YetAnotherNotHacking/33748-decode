@@ -27,7 +27,7 @@ public class BlueBack12 extends BaseAutoOpMode {
         controller.shoot(AutonomousConstants.PRELOAD_SHOOT_TIME);
         
         // Engage intake (for rest of auton)
-        controller.runIntakeForward();
+        controller.enableIntake();
         
         if (!AutonomousConstants.SKIP_HUMAN_INTAKE) {
             // 3. move to human player ball intake position

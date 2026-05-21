@@ -27,7 +27,7 @@ public class BlueFront6 extends BaseAutoOpMode {
         controller.shoot(AutonomousConstants.PRELOAD_SHOOT_TIME);
         
         // Engage intake (for rest of auton)
-        controller.runIntakeForward();
+        controller.enableIntake();
         
         // 3. move to intake position 1 for far row intake
         controller.pathTo(AutonomousPoints.Blue.Front.INTAKE_FAR_1);
