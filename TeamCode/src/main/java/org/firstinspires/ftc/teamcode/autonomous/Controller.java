@@ -29,7 +29,7 @@ public class Controller {
     }
 
     public void init() {
-        // Assume robot.init has already been called in BaseAutoOpMode
+        // assume robot.init was called by the base auto opmode, subsys should be ready already
         follower = robot.getFollower();
         try {
             colorShootSensor = opMode.hardwareMap.get(RevColorSensorV3.class, HardwareConstants.COLOR_SHOOT_SENSOR);
@@ -37,7 +37,8 @@ public class Controller {
             colorShootSensor = null;
         }
 
-        // Start the intake forward at configurable speed immediately
+        // old intake patch
+        // idk if removing this would break it and it works rn so its staying
         robot.intake.runFromTrigger(AutonomousConstants.INTAKE_FORWARD_SPEED);
     }
 
@@ -45,21 +46,12 @@ public class Controller {
         robot.setFieldPose(startPose.getX(), startPose.getY(), Math.toDegrees(startPose.getHeading()));
     }
 
-    /**
-     * Spins up the flywheel and keeps it spinning at the given RPM.
-     * This will be running in the background whenever update() is called.
-     */
+    // run shooter at an rpm
     public void startShooter(double rpm) {
         robot.shooter.setTargetRpm(rpm);
     }
 
-    /**
-     * Starts a background thread that continuously cycles the intake:
-     *   - Forward at INTAKE_FORWARD_SPEED for SHOOT_FORWARD_CYCLE_MS
-     *   - Reverse at INTAKE_REVERSE_SPEED for SHOOT_REVERSE_CYCLE_MS (jam clearing)
-     * The cycle repeats for the entire opmode. Call disableIntake() to stop it.
-     * While paused (via pauseIntakeCycling()), only the forward phase runs.
-     */
+    // background thread for intake unjamming assuming it's currently enabled.
     public void enableIntake() {
         if (!opMode.opModeIsActive() || isIntakeCycling) return;
 
@@ -75,7 +67,7 @@ public class Controller {
 
                 if (!isIntakeCycling || !opMode.opModeIsActive()) break;
 
-                // Phase 2: briefly reverse to clear jams — skipped while paused
+                // Phase 2: reverse for jam clearing if not paused
                 if (!intakePaused) {
                     robot.intake.reverse(AutonomousConstants.INTAKE_REVERSE_SPEED);
                     long reverseEnd = System.currentTimeMillis() + AutonomousConstants.SHOOT_REVERSE_CYCLE_MS;
@@ -108,27 +100,19 @@ public class Controller {
         robot.intake.stop();
     }
 
-    /**
-     * Pauses the reverse (jam-clearing) phase of the intake cycle.
-     * The intake will run forward-only until resumeIntakeCycling() is called.
-     * Use this while driving over intake positions so the intake stays engaged.
-     */
+    // pause intake unjamming cycles for intaking of rows
     public void pauseIntakeCycling() {
         intakePaused = true;
         // Immediately drive forward so there is no gap at the moment of pause
         robot.intake.runFromTrigger(AutonomousConstants.INTAKE_FORWARD_SPEED);
     }
 
-    /**
-     * Resumes the full forward→reverse jam-clearing cycle.
-     */
+    // go back to unjamming intake cycle
     public void resumeIntakeCycling() {
         intakePaused = false;
     }
 
-    /**
-     * Drives to a point and blocks until the robot is near the target or opmode stops.
-     */
+    // drive to point using pedro (no frac speed)
     public void pathTo(Pose targetPose) {
         if (!opMode.opModeIsActive()) return;
 
@@ -146,9 +130,7 @@ public class Controller {
         delayBetweenCommands();
     }
 
-    /**
-     * Drives to a point with a custom maximum speed scaling and blocks until the robot is near the target or opmode stops.
-     */
+    // drive to point using pedro, fractional speed
     public void pathTo(Pose targetPose, double speedPercent) {
         if (!opMode.opModeIsActive()) return;
 
@@ -166,10 +148,7 @@ public class Controller {
         delayBetweenCommands();
     }
 
-    /**
-     * Shoots for a specific duration in milliseconds. 
-     * Runs the feeder motor, and cycles the intake (900ms forward, 100ms reverse).
-     */
+    // shoot for ms
     public void shoot(long durationMs) {
         if (!opMode.opModeIsActive()) return;
 
@@ -221,9 +200,7 @@ public class Controller {
         robot.shooter.update();
     }
 
-    /**
-     * Sleeps for the specified duration in milliseconds while updating background subsystems.
-     */
+    // sleep (for spinup waits/other things)
     public void sleep(long durationMs) {
         if (!opMode.opModeIsActive()) return;
 
