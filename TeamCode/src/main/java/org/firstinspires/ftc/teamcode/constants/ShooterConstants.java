@@ -19,7 +19,7 @@ public class ShooterConstants {
     public static double CYCLE_B_TARGET_RPM = 4300.0;
 
     public static double FEEDER_MANUAL_POWER = 1.00;
-    public static double FEEDER_INDEX_POWER = 0.15;
+    public static double FEEDER_INDEX_POWER = 0.5;
     public static double FEEDER_ALPHA_STOP_THRESHOLD = 450.0;
 
     public static double SHOOTER_TRIGGER_DEADBAND = 0.02;

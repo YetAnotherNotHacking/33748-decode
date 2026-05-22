@@ -27,7 +27,7 @@ public class BlueBack12 extends BaseAutoOpMode {
         controller.shoot(AutonomousConstants.PRELOAD_SHOOT_TIME);
         
         // Engage intake (for rest of auton)
-        controller.runIntakeForward();
+        controller.enableIntake();
         
         if (!AutonomousConstants.SKIP_HUMAN_INTAKE) {
             // 3. move to human player ball intake position
@@ -39,23 +39,27 @@ public class BlueBack12 extends BaseAutoOpMode {
         }
         
         // 5. move to intake position 1 for back row intake
-        controller.pathTo(AutonomousPoints.Blue.Back.INTAKE_CLOSE_1, AutonomousConstants.INTAKE_PATH_SPEED_SCALING);
+        controller.pauseIntakeCycling();
+        controller.pathTo(AutonomousPoints.Blue.Back.INTAKE_CLOSE_1);
         
         // 6. move to intake position 2 for back row intake
         controller.pathTo(AutonomousPoints.Blue.Back.INTAKE_CLOSE_2, AutonomousConstants.INTAKE_PATH_SPEED_SCALING);
         
         // 7. shoot balls
         controller.pathTo(AutonomousPoints.Blue.Back.SHOOT);
+        controller.resumeIntakeCycling();
         controller.shoot(AutonomousConstants.CYCLE_SHOOT_TIME);
         
         // 8. move to intake position 1 for middle row intake
-        controller.pathTo(AutonomousPoints.Blue.Back.INTAKE_MIDDLE_1, AutonomousConstants.INTAKE_PATH_SPEED_SCALING);
+        controller.pauseIntakeCycling();
+        controller.pathTo(AutonomousPoints.Blue.Back.INTAKE_MIDDLE_1);
         
         // 9. move to intake position 2 for middle row intake
         controller.pathTo(AutonomousPoints.Blue.Back.INTAKE_MIDDLE_2, AutonomousConstants.INTAKE_PATH_SPEED_SCALING);
         
         // 10. shoot balls
         controller.pathTo(AutonomousPoints.Blue.Back.SHOOT);
+        controller.resumeIntakeCycling();
         controller.shoot(AutonomousConstants.CYCLE_SHOOT_TIME);
         
         // 11. park back position

@@ -19,6 +19,9 @@ public class Controller {
     private Follower follower;
     private RevColorSensorV3 colorShootSensor;
     private boolean isShooting = false;
+    private volatile boolean isIntakeCycling = false;
+    private volatile boolean intakePaused = false;
+    private Thread intakeCycleThread = null;
 
     public Controller(LinearOpMode opMode, RobotContainer robot) {
         this.opMode = opMode;
@@ -51,10 +54,40 @@ public class Controller {
     }
 
     /**
-     * Turns on the intake to the default forward speed.
+     * Starts a background thread that continuously cycles the intake:
+     *   - Forward at INTAKE_FORWARD_SPEED for SHOOT_FORWARD_CYCLE_MS
+     *   - Reverse at INTAKE_REVERSE_SPEED for SHOOT_REVERSE_CYCLE_MS (jam clearing)
+     * The cycle repeats for the entire opmode. Call disableIntake() to stop it.
+     * While paused (via pauseIntakeCycling()), only the forward phase runs.
      */
     public void enableIntake() {
-        robot.intake.runFromTrigger(AutonomousConstants.INTAKE_FORWARD_SPEED);
+        if (!opMode.opModeIsActive() || isIntakeCycling) return;
+
+        isIntakeCycling = true;
+        intakeCycleThread = new Thread(() -> {
+            while (isIntakeCycling && opMode.opModeIsActive()) {
+                // Phase 1: run forward
+                robot.intake.runFromTrigger(AutonomousConstants.INTAKE_FORWARD_SPEED);
+                long forwardEnd = System.currentTimeMillis() + AutonomousConstants.SHOOT_FORWARD_CYCLE_MS;
+                while (isIntakeCycling && opMode.opModeIsActive() && System.currentTimeMillis() < forwardEnd) {
+                    try { Thread.sleep(10); } catch (InterruptedException e) { return; }
+                }
+
+                if (!isIntakeCycling || !opMode.opModeIsActive()) break;
+
+                // Phase 2: briefly reverse to clear jams — skipped while paused
+                if (!intakePaused) {
+                    robot.intake.reverse(AutonomousConstants.INTAKE_REVERSE_SPEED);
+                    long reverseEnd = System.currentTimeMillis() + AutonomousConstants.SHOOT_REVERSE_CYCLE_MS;
+                    while (isIntakeCycling && opMode.opModeIsActive() && System.currentTimeMillis() < reverseEnd) {
+                        try { Thread.sleep(10); } catch (InterruptedException e) { return; }
+                    }
+                }
+            }
+            robot.intake.stop();
+        });
+        intakeCycleThread.setDaemon(true);
+        intakeCycleThread.start();
     }
     
     public void runIntakeForward() {
@@ -66,7 +99,31 @@ public class Controller {
     }
 
     public void disableIntake() {
+        isIntakeCycling = false;
+        if (intakeCycleThread != null) {
+            intakeCycleThread.interrupt();
+            try { intakeCycleThread.join(500); } catch (InterruptedException ignored) {}
+            intakeCycleThread = null;
+        }
         robot.intake.stop();
+    }
+
+    /**
+     * Pauses the reverse (jam-clearing) phase of the intake cycle.
+     * The intake will run forward-only until resumeIntakeCycling() is called.
+     * Use this while driving over intake positions so the intake stays engaged.
+     */
+    public void pauseIntakeCycling() {
+        intakePaused = true;
+        // Immediately drive forward so there is no gap at the moment of pause
+        robot.intake.runFromTrigger(AutonomousConstants.INTAKE_FORWARD_SPEED);
+    }
+
+    /**
+     * Resumes the full forward→reverse jam-clearing cycle.
+     */
+    public void resumeIntakeCycling() {
+        intakePaused = false;
     }
 
     /**
@@ -148,8 +205,7 @@ public class Controller {
     public void update() {
         follower.update();
 
-        // Always ensure the intake is running forward during autonomous
-        robot.intake.runFromTrigger(AutonomousConstants.INTAKE_FORWARD_SPEED);
+        // Intake is managed by the background cycling thread when enableIntake() is active
 
         if (!isShooting) {
             double feederPower;

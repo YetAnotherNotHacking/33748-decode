@@ -26,16 +26,18 @@ public class RedFront6 extends BaseAutoOpMode {
         controller.shoot(AutonomousConstants.PRELOAD_SHOOT_TIME);
         
         // Engage intake (for rest of auton)
-        controller.runIntakeForward();
+        controller.enableIntake();
         
         // 3. move to intake position 1 for far row intake
-        controller.pathTo(AutonomousPoints.Red.Front.INTAKE_FAR_1, AutonomousConstants.INTAKE_PATH_SPEED_SCALING);
+        controller.pauseIntakeCycling();
+        controller.pathTo(AutonomousPoints.Red.Front.INTAKE_FAR_1);
         
         // 4. move to intake position 2 for far row intake
         controller.pathTo(AutonomousPoints.Red.Front.INTAKE_FAR_2, AutonomousConstants.INTAKE_PATH_SPEED_SCALING);
         
         // 5. move to shoot position
         controller.pathTo(AutonomousPoints.Red.Front.SHOOT);
+        controller.resumeIntakeCycling();
         
         // 6. shoot balls
         controller.shoot(AutonomousConstants.CYCLE_SHOOT_TIME);
