@@ -39,6 +39,7 @@ public class BlueBack9 extends BaseAutoOpMode {
         }
         
         // 5. move to intake position 1 for back row intake
+        controller.pauseIntakeCycling();
         controller.pathTo(AutonomousPoints.Blue.Back.INTAKE_CLOSE_1);
         
         // 6. move to intake position 2 for back row intake
@@ -46,6 +47,7 @@ public class BlueBack9 extends BaseAutoOpMode {
         
         // 7. shoot balls
         controller.pathTo(AutonomousPoints.Blue.Back.SHOOT);
+        controller.resumeIntakeCycling();
         controller.shoot(AutonomousConstants.CYCLE_SHOOT_TIME);
         
         // 8. park back position

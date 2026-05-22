@@ -38,6 +38,7 @@ public class RedBack12 extends BaseAutoOpMode {
         }
         
         // 5. move to intake position 1 for back row intake
+        controller.pauseIntakeCycling();
         controller.pathTo(AutonomousPoints.Red.Back.INTAKE_CLOSE_1);
         
         // 6. move to intake position 2 for back row intake
@@ -45,9 +46,11 @@ public class RedBack12 extends BaseAutoOpMode {
         
         // 7. shoot balls
         controller.pathTo(AutonomousPoints.Red.Back.SHOOT);
+        controller.resumeIntakeCycling();
         controller.shoot(AutonomousConstants.CYCLE_SHOOT_TIME);
         
         // 8. move to intake position 1 for middle row intake
+        controller.pauseIntakeCycling();
         controller.pathTo(AutonomousPoints.Red.Back.INTAKE_MIDDLE_1);
         
         // 9. move to intake position 2 for middle row intake
@@ -55,6 +58,7 @@ public class RedBack12 extends BaseAutoOpMode {
         
         // 10. shoot balls
         controller.pathTo(AutonomousPoints.Red.Back.SHOOT);
+        controller.resumeIntakeCycling();
         controller.shoot(AutonomousConstants.CYCLE_SHOOT_TIME);
         
         // 11. park back position

@@ -30,6 +30,7 @@ public class BlueFront9 extends BaseAutoOpMode {
         controller.enableIntake();
         
         // 3. move to intake position 1 for far row intake
+        controller.pauseIntakeCycling();
         controller.pathTo(AutonomousPoints.Blue.Front.INTAKE_FAR_1);
         
         // 4. move to intake position 2 for far row intake
@@ -37,11 +38,13 @@ public class BlueFront9 extends BaseAutoOpMode {
         
         // 5. move to shoot position
         controller.pathTo(AutonomousPoints.Blue.Front.SHOOT);
+        controller.resumeIntakeCycling();
         
         // 6. shoot balls
         controller.shoot(AutonomousConstants.CYCLE_SHOOT_TIME);
         
         // 7. move to intake position 1 for middle row intake
+        controller.pauseIntakeCycling();
         controller.pathTo(AutonomousPoints.Blue.Front.INTAKE_MID_1);
         
         // 8. move to intake position 2 for middle row intake
@@ -49,6 +52,7 @@ public class BlueFront9 extends BaseAutoOpMode {
         
         // 9. move to shoot position
         controller.pathTo(AutonomousPoints.Blue.Front.SHOOT);
+        controller.resumeIntakeCycling();
         
         // 10. shoot balls
         controller.shoot(AutonomousConstants.CYCLE_SHOOT_TIME);
