@@ -8,7 +8,7 @@ public final class AutonomousPoints {
 
     public static final class Red {
         public static final class Back {
-            public static final Pose SHOOT = new Pose(7.79, -0.48, Math.toRadians(-109.00));
+            public static final Pose SHOOT = new Pose(4.49, 2.15, Math.toRadians(-114.18));
             public static final Pose INTAKE_CLOSE_1 = new Pose(26.00, -2.0, Math.toRadians(90.00));
             public static final Pose INTAKE_CLOSE_2 = new Pose(26.00, -39.70, Math.toRadians(90.00));
             public static final Pose INTAKE_MIDDLE_1 = new Pose(50.00, -2.0, Math.toRadians(90.00));
@@ -29,7 +29,7 @@ public final class AutonomousPoints {
 
     public static final class Blue {
         public static final class Back {
-            public static final Pose SHOOT = new Pose(8.60, -3.27, Math.toRadians(-60.68));
+            public static final Pose SHOOT = new Pose(4.30, -3.51, Math.toRadians(-67.45));
             public static final Pose INTAKE_CLOSE_1 = new Pose(25.63, 13.98, Math.toRadians(-90.00));
             public static final Pose INTAKE_CLOSE_2 = new Pose(26.75, 36.23, Math.toRadians(-90.00));
             public static final Pose INTAKE_MIDDLE_1 = new Pose(48.41, 14.86, Math.toRadians(-90.00));
