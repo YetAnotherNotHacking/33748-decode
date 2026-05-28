@@ -23,6 +23,8 @@ public class DriveConstants {
 
     public static double DRIVE_INPUT_DEADBAND = 0.03;
     public static double TURN_INPUT_DEADBAND = 0.03;
+    
+    public static double PINPOINT_CALIBRATION_DELAY_SECONDS = 2.0;
 
     private DriveConstants() {
     }
