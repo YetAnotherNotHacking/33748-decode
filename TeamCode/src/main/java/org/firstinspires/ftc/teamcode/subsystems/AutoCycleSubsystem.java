@@ -28,6 +28,8 @@ public class AutoCycleSubsystem {
     private double lastDistanceToTarget;
     private double lastEtaSeconds = Double.POSITIVE_INFINITY;
     private boolean feederShouldRun;
+    private long feederRunStartTime = 0;
+    private boolean wasFeederRunning = false;
 
     public void beginOrUpdate(Slot slot, boolean isBlueAlliance, Pose currentPose, Follower follower) {
         if (!pathStarted || activeSlot != slot || blueAlliance != isBlueAlliance) {
@@ -38,6 +40,7 @@ public class AutoCycleSubsystem {
             pathStarted = true;
             hasPreviousPose = false;
             feederShouldRun = false;
+            wasFeederRunning = false;
         }
 
         updateProgress(currentPose, follower);
@@ -54,6 +57,7 @@ public class AutoCycleSubsystem {
         activeTarget = null;
         hasPreviousPose = false;
         feederShouldRun = false;
+        wasFeederRunning = false;
         lastDistanceToTarget = 0.0;
         lastEtaSeconds = Double.POSITIVE_INFINITY;
     }
@@ -70,7 +74,19 @@ public class AutoCycleSubsystem {
     }
 
     public double getSuggestedFeederPower() {
-        return feederShouldRun ? ShooterConstants.FEEDER_MANUAL_POWER : 0.0;
+        if (!feederShouldRun) {
+            return 0.0;
+        }
+        long elapsed = System.currentTimeMillis() - feederRunStartTime;
+        long pauseTime = activeSlot == Slot.A ? ShooterConstants.CYCLE_A_FEEDER_PULSE_PAUSE_TIME_MS : ShooterConstants.CYCLE_B_FEEDER_PULSE_PAUSE_TIME_MS;
+        long cycleTime = ShooterConstants.FEEDER_PULSE_RUN_TIME_MS + pauseTime;
+        if (cycleTime <= 0) return ShooterConstants.FEEDER_MANUAL_POWER;
+        long timeInCycle = elapsed % cycleTime;
+        if (timeInCycle < ShooterConstants.FEEDER_PULSE_RUN_TIME_MS) {
+            return ShooterConstants.FEEDER_MANUAL_POWER;
+        } else {
+            return 0.0;
+        }
     }
 
     public Pose getActiveTarget() {
@@ -88,6 +104,7 @@ public class AutoCycleSubsystem {
     private void updateProgress(Pose currentPose, Follower follower) {
         if (activeTarget == null) {
             feederShouldRun = false;
+            wasFeederRunning = false;
             lastDistanceToTarget = 0.0;
             lastEtaSeconds = Double.POSITIVE_INFINITY;
             return;
@@ -122,7 +139,12 @@ public class AutoCycleSubsystem {
             previousTimeNanos = nowNanos;
         }
 
-        feederShouldRun = arrived || lastEtaSeconds <= AutoConstants.CYCLE_FEED_LEAD_SECONDS;
+        boolean shouldRunNow = arrived || lastEtaSeconds <= AutoConstants.CYCLE_FEED_LEAD_SECONDS;
+        if (shouldRunNow && !wasFeederRunning) {
+            feederRunStartTime = System.currentTimeMillis();
+        }
+        wasFeederRunning = shouldRunNow;
+        feederShouldRun = shouldRunNow;
     }
 
     private static Pose getTargetPose(Slot slot, boolean isBlueAlliance) {

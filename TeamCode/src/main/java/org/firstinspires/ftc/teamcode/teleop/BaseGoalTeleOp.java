@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.RobotContainer;
 import org.firstinspires.ftc.teamcode.constants.AutoConstants;
+import org.firstinspires.ftc.teamcode.constants.DriveConstants;
 import org.firstinspires.ftc.teamcode.constants.HardwareConstants;
 import org.firstinspires.ftc.teamcode.constants.IntakeConstants;
 import org.firstinspires.ftc.teamcode.constants.ShooterConstants;
@@ -16,6 +17,7 @@ import org.firstinspires.ftc.teamcode.subsystems.AutoCycleSubsystem;
 public abstract class BaseGoalTeleOp extends OpMode {
     private final RobotContainer robot = new RobotContainer();
     private boolean lastStart;
+    private long lockoutEndTime = 0;
 
     private RevColorSensorV3 colorShootSensor;
     private double lastActiveCycleRpm = ShooterConstants.DEFAULT_TARGET_RPM;
@@ -45,6 +47,27 @@ public abstract class BaseGoalTeleOp extends OpMode {
 
     @Override
     public void loop() {
+        boolean startPressed = gamepad1.start;
+        if (startPressed && !lastStart) {
+            robot.resetRobotState();
+            robot.setFieldPose(0.0, 0.0, 0.0);
+            lockoutEndTime = System.currentTimeMillis() + (long)(DriveConstants.PINPOINT_CALIBRATION_DELAY_SECONDS * 1000);
+        }
+        lastStart = startPressed;
+
+        if (System.currentTimeMillis() < lockoutEndTime) {
+            robot.drive.setBrakeMode(true);
+            robot.drive.driveFieldOriented(0, 0, 0);
+            robot.intake.runFromTrigger(0.0);
+            robot.shooter.setTargetRpm(0.0);
+            robot.shooter.setFeederPower(0.0);
+            robot.shooter.update();
+            robot.getFollower().update();
+            telemetry.addData("STATUS", "CALIBRATING PINPOINT - CONTROLS LOCKED");
+            telemetry.update();
+            return;
+        }
+
         Follower follower = robot.getFollower();
         follower.update();
         Pose followerPose = follower.getPose();
@@ -71,14 +94,12 @@ public abstract class BaseGoalTeleOp extends OpMode {
             robot.drive.driveFieldOriented(forward, strafe, turn);
         }
 
-        if (robot.autoCycle.isActive()) {
+        if (gamepad1.left_bumper) {
+            robot.intake.reverse(IntakeConstants.BUMPER_REVERSE_POWER);
+        } else if (robot.autoCycle.isActive()) {
             robot.intake.runFromTrigger(AutoConstants.CYCLE_INTAKE_POWER);
         } else {
-            if (gamepad1.left_bumper) {
-                robot.intake.reverse(IntakeConstants.BUMPER_REVERSE_POWER);
-            } else {
-                robot.intake.runFromTrigger(gamepad1.left_trigger);
-            }
+            robot.intake.runFromTrigger(gamepad1.left_trigger);
         }
 
         double shooterTargetRpm;
@@ -99,23 +120,16 @@ public abstract class BaseGoalTeleOp extends OpMode {
 
         robot.shooter.setTargetRpm(shooterTargetRpm);
         double feederPower;
-        if (robot.autoCycle.isActive()) {
+        if (gamepad1.right_bumper) {
+            feederPower = 1.0;
+        } else if (robot.autoCycle.isActive()) {
             feederPower = robot.autoCycle.getSuggestedFeederPower();
-        } else if (gamepad1.right_bumper) {
-            feederPower = ShooterConstants.FEEDER_MANUAL_POWER;
         } else {
             boolean shouldStopIndexer = alpha > ShooterConstants.FEEDER_ALPHA_STOP_THRESHOLD;
             feederPower = shouldStopIndexer ? 0.0 : ShooterConstants.FEEDER_INDEX_POWER;
         }
         robot.shooter.setFeederPower(feederPower);
         robot.shooter.update();
-
-        boolean startPressed = gamepad1.start;
-        if (startPressed && !lastStart) {
-            robot.resetRobotState();
-            robot.setFieldPose(0.0, 0.0, 0.0);
-        }
-        lastStart = startPressed;
 
         if (colorShootSensor != null) {
             int red = colorShootSensor.red();
