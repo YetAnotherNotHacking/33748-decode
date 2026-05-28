@@ -23,7 +23,7 @@ public final class AutonomousConstants {
     public static double INTAKE_PATH_SPEED_SCALING = 0.21;
     
     // Feeder timings/speeds during autonomous
-    public static double FEEDER_SPEED = 1.0;
+    public static double FEEDER_SPEED = 0.7;
 
     // Time to spend shooting all preloads
     public static long PRELOAD_SHOOT_TIME = 2200;
