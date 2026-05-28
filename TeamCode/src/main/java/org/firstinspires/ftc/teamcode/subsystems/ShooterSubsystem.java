@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.constants.HardwareConstants;
 import org.firstinspires.ftc.teamcode.constants.ShooterConstants;
+import org.firstinspires.ftc.teamcode.controllers.PIDRPMController;
 
 public class ShooterSubsystem {
     private DcMotorEx shooterMotor;
@@ -14,13 +15,22 @@ public class ShooterSubsystem {
 
     private double targetRpm;
     private double feederPower;
+    private PIDRPMController pidController;
 
     public void init(HardwareMap hardwareMap) {
         shooterMotor = hardwareMap.get(DcMotorEx.class, HardwareConstants.SHOOTER_MOTOR);
         feederMotor = hardwareMap.get(DcMotor.class, HardwareConstants.FEEDER_MOTOR);
 
-        shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        
+        pidController = new PIDRPMController(
+                ShooterConstants.TICKS_PER_REV,
+                ShooterConstants.PID_P,
+                ShooterConstants.PID_I,
+                ShooterConstants.PID_D,
+                ShooterConstants.PID_F
+        );
         feederMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         setTargetRpm(0.0);
@@ -49,14 +59,15 @@ public class ShooterSubsystem {
     }
 
     public void update() {
-        double currentRpm = getCurrentRpm();
         double shooterPower;
         if (targetRpm <= 0.0) {
             shooterPower = 0.0;
-        } else if (currentRpm < targetRpm) {
-            shooterPower = 1.0;
         } else {
-            shooterPower = 0.0;
+            shooterPower = pidController.update(
+                    shooterMotor.getCurrentPosition(),
+                    targetRpm,
+                    System.nanoTime() / 1e9
+            );
         }
 
         shooterMotor.setPower(shooterPower);
