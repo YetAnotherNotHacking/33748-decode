@@ -9,8 +9,8 @@ import com.bylazar.configurables.annotations.Configurable;
 public final class AutonomousConstants {
 
     // Shooter RPM settings
-    public static double FAR_SHOOT_RPM = 6000.0;
-    public static double CLOSE_SHOOT_RPM = 6000.0;
+    public static double FAR_SHOOT_RPM = 4490.0;
+    public static double CLOSE_SHOOT_RPM = 4190.0;
     
     // Intake timings/speeds
     public static long SHOOT_FORWARD_CYCLE_MS = 1000;
@@ -35,7 +35,7 @@ public final class AutonomousConstants {
     public static long COMMAND_DELAY_MS = 160;
     
     // Configurable delay before the first shot to allow the flywheel to spin up in milliseconds
-    public static long SPIN_UP_DELAY_MS = 1300;
+    public static long SPIN_UP_DELAY_MS = 1900;
     
     // Constant to skip human player intake for back autos
     public static boolean SKIP_HUMAN_INTAKE = true;
