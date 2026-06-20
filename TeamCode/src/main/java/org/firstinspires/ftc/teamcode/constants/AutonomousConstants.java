@@ -26,7 +26,7 @@ public final class AutonomousConstants {
     public static double FEEDER_SPEED = 0.3;
 
     // Time to spend shooting all preloads
-    public static long PRELOAD_SHOOT_TIME = 2200;
+    public static long PRELOAD_SHOOT_TIME = 6500;
     
     // Time to spend shooting intaked balls
     public static long CYCLE_SHOOT_TIME = 6500;
