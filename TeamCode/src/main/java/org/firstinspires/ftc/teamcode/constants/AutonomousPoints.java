@@ -47,7 +47,7 @@ public final class AutonomousPoints {
             public static final Pose INTAKE_FAR_2 = new Pose(-23.03, 32.60, Math.toRadians(-140.29));
             public static final Pose INTAKE_MID_1 = new Pose(-57.38, 35.85, Math.toRadians(-139.75));
             public static final Pose INTAKE_MID_2 = new Pose(-36.30, 51.88, Math.toRadians(-140.56));
-            public static final Pose GATE = new Pose(1.99, -44.98, Math.toRadians(70.94));
+            public static final Pose GATE = new Pose(1.99, -44.98, Math.toRadians(70.94)); // NOT REAL!!!!!
             public static final Pose PARK_FAR = new Pose(-32.70, -16.76, Math.toRadians(42.29));
         }
     }
