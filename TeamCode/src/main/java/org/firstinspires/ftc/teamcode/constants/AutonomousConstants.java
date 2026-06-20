@@ -23,19 +23,19 @@ public final class AutonomousConstants {
     public static double INTAKE_PATH_SPEED_SCALING = 0.21;
     
     // Feeder timings/speeds during autonomous
-    public static double FEEDER_SPEED = 0.7;
+    public static double FEEDER_SPEED = 0.3;
 
     // Time to spend shooting all preloads
     public static long PRELOAD_SHOOT_TIME = 2200;
     
     // Time to spend shooting intaked balls
-    public static long CYCLE_SHOOT_TIME = 2900;
+    public static long CYCLE_SHOOT_TIME = 6500;
     
     // Configurable delay between executed commands in milliseconds
     public static long COMMAND_DELAY_MS = 160;
     
     // Configurable delay before the first shot to allow the flywheel to spin up in milliseconds
-    public static long SPIN_UP_DELAY_MS = 1900;
+    public static long SPIN_UP_DELAY_MS = 2000;
     
     // Constant to skip human player intake for back autos
     public static boolean SKIP_HUMAN_INTAKE = true;
