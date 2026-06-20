@@ -22,6 +22,12 @@ public class AutoConstants {
     public static double BLUE_CYCLE_C_Y_INCHES = -108.44;
     public static double BLUE_CYCLE_C_HEADING_DEGREES = -96.19;
 
+    public static double BLUE_CYCLE_D_X_INCHES = 0.0;
+    public static double BLUE_CYCLE_D_Y_INCHES = 0.0;
+    public static double BLUE_CYCLE_D_HEADING_DEGREES = 0.0;
+
+
+
     public static double RED_CYCLE_A_X_INCHES = 59.03;
     public static double RED_CYCLE_A_Y_INCHES = 8.03;
     public static double RED_CYCLE_A_HEADING_DEGREES = -28.04;
@@ -33,6 +39,10 @@ public class AutoConstants {
     public static double RED_CYCLE_C_X_INCHES = 13.43;
     public static double RED_CYCLE_C_Y_INCHES = 106.76;
     public static double RED_CYCLE_C_HEADING_DEGREES = -78.75;
+
+    public static double RED_CYCLE_D_X_INCHES = 0.0;
+    public static double RED_CYCLE_D_Y_INCHES = 0.0;
+    public static double RED_CYCLE_D_HEADING_DEGREES = 0.0;
 
     private AutoConstants() {
     }

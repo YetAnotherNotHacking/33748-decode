@@ -75,12 +75,14 @@ public abstract class BaseGoalTeleOp extends OpMode {
         boolean cycleAHeld = gamepad1.a;
         boolean cycleBHeld = gamepad1.b;
         boolean cycleCHeld = gamepad1.x;
-        boolean cycleRequested = cycleAHeld || cycleBHeld || cycleCHeld;
+        boolean cycleDHeld = gamepad1.y;
+        boolean cycleRequested = cycleAHeld || cycleBHeld || cycleCHeld || cycleDHeld;
 
         AutoCycleSubsystem.Slot cycleSlot = null;
         if (cycleAHeld) cycleSlot = AutoCycleSubsystem.Slot.A;
         else if (cycleBHeld) cycleSlot = AutoCycleSubsystem.Slot.B;
         else if (cycleCHeld) cycleSlot = AutoCycleSubsystem.Slot.C;
+        else if (cycleDHeld) cycleSlot = AutoCycleSubsystem.Slot.D;
 
         if (cycleRequested && cycleSlot != null) {
             robot.autoCycle.beginOrUpdate(cycleSlot, isBlueAlliance(), followerPose, follower);
@@ -148,6 +150,7 @@ public abstract class BaseGoalTeleOp extends OpMode {
         telemetry.addData("Cycle A", cycleAHeld ? "HELD" : "OFF");
         telemetry.addData("Cycle B", cycleBHeld ? "HELD" : "OFF");
         telemetry.addData("Cycle C", cycleCHeld ? "HELD" : "OFF");
+        telemetry.addData("Cycle D", cycleDHeld ? "HELD" : "OFF");
         telemetry.addData("Auto Cycle Active", robot.autoCycle.isActive());
         if (robot.autoCycle.getActiveTarget() != null) {
             telemetry.addData("Cycle Target", "X %.2f / Y %.2f / H %.1f",

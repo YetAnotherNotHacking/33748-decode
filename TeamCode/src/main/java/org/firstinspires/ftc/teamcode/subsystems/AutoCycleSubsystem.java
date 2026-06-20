@@ -12,7 +12,8 @@ public class AutoCycleSubsystem {
     public enum Slot {
         A,
         B,
-        C
+        C,
+        D
     }
 
     private Slot activeSlot;
@@ -71,6 +72,7 @@ public class AutoCycleSubsystem {
         if (!pathStarted) {
             return 0.0;
         }
+        if (activeSlot == Slot.D) return ShooterConstants.CYCLE_D_MIDWAY_TARGET_RPM;
         if (activeSlot == Slot.C) return ShooterConstants.CYCLE_C_OPPOSITION_TARGET_RPM;
         return activeSlot == Slot.A ? ShooterConstants.CYCLE_A_TARGET_RPM : ShooterConstants.CYCLE_B_TARGET_RPM;
     }
@@ -83,7 +85,8 @@ public class AutoCycleSubsystem {
         long pauseTime = 0;
         if (activeSlot == Slot.A) pauseTime = ShooterConstants.CYCLE_A_FEEDER_PULSE_PAUSE_TIME_MS;
         else if (activeSlot == Slot.B) pauseTime = ShooterConstants.CYCLE_B_FEEDER_PULSE_PAUSE_TIME_MS;
-        else pauseTime = ShooterConstants.CYCLE_C_FEEDER_PULSE_PAUSE_TIME_MS;
+        else if (activeSlot == Slot.C) pauseTime = ShooterConstants.CYCLE_C_FEEDER_PULSE_PAUSE_TIME_MS;
+        else pauseTime = ShooterConstants.CYCLE_D_FEEDER_PULSE_PAUSE_TIME_MS;
         long cycleTime = ShooterConstants.FEEDER_PULSE_RUN_TIME_MS + pauseTime;
         if (cycleTime <= 0) return ShooterConstants.FEEDER_MANUAL_POWER;
         long timeInCycle = elapsed % cycleTime;
@@ -166,11 +169,17 @@ public class AutoCycleSubsystem {
                         AutoConstants.BLUE_CYCLE_B_Y_INCHES,
                         Math.toRadians(AutoConstants.BLUE_CYCLE_B_HEADING_DEGREES)
                 );
-            } else {
+            } else if (slot == Slot.C) {
                 return new Pose(
                         AutoConstants.BLUE_CYCLE_C_X_INCHES,
                         AutoConstants.BLUE_CYCLE_C_Y_INCHES,
                         Math.toRadians(AutoConstants.BLUE_CYCLE_C_HEADING_DEGREES)
+                );
+            } else {
+                return new Pose(
+                        AutoConstants.BLUE_CYCLE_D_X_INCHES,
+                        AutoConstants.BLUE_CYCLE_D_Y_INCHES,
+                        Math.toRadians(AutoConstants.BLUE_CYCLE_D_HEADING_DEGREES)
                 );
             }
         }
@@ -187,11 +196,17 @@ public class AutoCycleSubsystem {
                     AutoConstants.RED_CYCLE_B_Y_INCHES,
                     Math.toRadians(AutoConstants.RED_CYCLE_B_HEADING_DEGREES)
             );
-        } else {
+        } else if (slot == Slot.C) {
             return new Pose(
                     AutoConstants.RED_CYCLE_C_X_INCHES,
                     AutoConstants.RED_CYCLE_C_Y_INCHES,
                     Math.toRadians(AutoConstants.RED_CYCLE_C_HEADING_DEGREES)
+            );
+        } else {
+            return new Pose(
+                    AutoConstants.RED_CYCLE_D_X_INCHES,
+                    AutoConstants.RED_CYCLE_D_Y_INCHES,
+                    Math.toRadians(AutoConstants.RED_CYCLE_D_HEADING_DEGREES)
             );
         }
     }
