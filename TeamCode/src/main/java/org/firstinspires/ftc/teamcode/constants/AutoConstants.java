@@ -40,9 +40,9 @@ public class AutoConstants {
     public static double RED_CYCLE_C_Y_INCHES = 106.76;
     public static double RED_CYCLE_C_HEADING_DEGREES = -78.75;
 
-    public static double RED_CYCLE_D_X_INCHES = 0.0;
-    public static double RED_CYCLE_D_Y_INCHES = 0.0;
-    public static double RED_CYCLE_D_HEADING_DEGREES = 0.0;
+    public static double RED_CYCLE_D_X_INCHES = 32.27;
+    public static double RED_CYCLE_D_Y_INCHES = 84.93;
+    public static double RED_CYCLE_D_HEADING_DEGREES = -63.17;
 
     private AutoConstants() {
     }
